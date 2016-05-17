@@ -1,0 +1,297 @@
+/**
+ * Import base style
+ */
+
+@import "base.less";
+@import "shadows.less";
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,300);
+
+/**
+ * Here comes specific style for a certain test program.
+ */
+
+@messageRowHeight: 50px;
+@headerHeight: 60px;
+html {
+    background: rgba(0, 0, 0, 0) linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%) repeat scroll 0 0;
+    min-height: 100%;
+}
+
+body {
+    width: 100%;
+    background-color: transparent;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+}
+
+main {
+    overflow: auto;
+    width: 100%;
+}
+
+footer {
+    display: none;
+}
+
+.intro {
+    color: white;
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.input-name,
+.input-email,
+.input-name-button {
+    display: block;
+    margin: 0 auto;
+}
+
+.input-name,
+.input-email {
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid @greyLighter;
+    color: white;
+    padding: 5px;
+    font-size: 26px;
+    width: 90%;
+}
+
+.input-name-button {
+    color: white;
+    padding: 15px 30px;
+    border: 2px solid white;
+    border-radius: 30px;
+    background-color: transparent;
+    margin-top: 1.5em;
+    text-transform: uppercase;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.5s;
+    .icon {
+        margin-right: 0.7em;
+    }
+    &:hover {
+        background-color: white;
+        color: black;
+    }
+}
+
+.input-row,
+.chat-window,
+.participants,
+.chat-header {
+    position: absolute;
+}
+
+.chat-header {
+    background-color: @green;
+    color: white;
+    text-align: left;
+    top: 0;
+    width: 100%;
+    padding: 1em;
+    z-index: 50;
+    height: @headerHeight;
+    .header-name {
+        font-weight: 300;
+    }
+    .BoxShadowHelper(1);
+    .ion-person-stalker {
+        float: right;
+        cursor: pointer;
+        visibility: visible;
+        border: 2px solid #ffffff;
+        border-radius: 5px;
+        font-style: normal;
+        font-weight: 700;
+        padding: 2px 8px;
+        .number-indicator {
+            margin-left: 5px;
+        }
+    }
+    p {
+        font-weight: 700;
+        font-size: 120%;
+    }
+}
+
+.participants {
+    z-index: 60;
+    display: none;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 85%;
+    h4 {
+        text-align: center;
+        margin: 0 0 1em 0;
+        background-color: @blue;
+        color: white;
+        height: @headerHeight;
+        padding: 1em;
+        font-size: 110%;
+        .icon {
+            float: left;
+            cursor: pointer;
+        }
+    }
+    p {
+        margin-bottom: 5px;
+        padding: 0.5em 1em;
+        border-bottom: 1px solid @greyLight;
+        font-weight: 700;
+        cursor: default;
+        i {
+            margin-right: 20px;
+            font-size: 160%;
+        }
+        img {
+            width: 64px;
+            border-radius: 32px;
+            margin-right: 10px;
+        }
+    }
+}
+
+.chat-window {
+    @imgWidth: 36px;
+    @imgMargin: 12px;
+    padding: 1em 0.75em;
+    background-color: white;
+    width: 100%;
+    bottom: @messageRowHeight;
+    float: left;
+    top: @headerHeight;
+    overflow: auto;
+    .gravatar {
+        width: @imgWidth;
+        border-radius: 4px;
+        margin-right: @imgMargin;
+        float: left;
+    }
+    .message-header {
+        font-size: 80%;
+        margin-bottom: 0.25em;
+        .timestamp {
+            color: @greyLight;
+            margin-left: 1em;
+        }
+        .author {
+            font-weight: 700;
+        }
+    }
+    .mention {
+        background-color: #FFCCCC;
+    }
+    .message-content {
+        margin-left: @imgWidth + @imgMargin;
+        margin-bottom: 1.5em;
+        .warning {
+            color: red;
+        }
+        .notification {
+            color: grey;
+        }
+    }
+}
+
+.input-row {
+    bottom: 0;
+    height: @messageRowHeight;
+    width: 100%;
+    background-color: @greyLighter;
+    padding: 5px;
+}
+
+@messageButtonWidth: 60px;
+.message {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid darken(@greyLighter, 10%);
+    padding: 10px 5px;
+    padding-right: @messageButtonWidth + 5px;
+}
+
+.send-button {
+    background-color: #B463AE;
+    border: 0 none;
+    border-radius: 0;
+    width: @messageButtonWidth;
+    cursor: pointer;
+    text-align: center;
+    color: #fff;
+    transition: background-color 300ms ease-in-out;
+    margin-left: -@messageButtonWidth;
+    border-radius: 0 5px 5px 0;
+    padding: 10px 5px;
+    &:hover {
+        background-color: darken(#B463AE, 10%);
+    }
+}
+
+input[type="text"]:focus {
+    outline: none;
+}
+
+@media (min-width: 400px) {
+    h1 {
+        font-size: 48px;
+    }
+}
+
+@media (min-width: 560px) {
+    .intro {
+        width: 85%;
+    }
+}
+
+@media (min-width: 801px) {
+    .intro {
+        width: 75%;
+    }
+    h1 {
+        font-size: 56px;
+    }
+    .chat-window,
+    .chat-header,
+    .input-row {
+        width: 75%;
+    }
+    .participants {
+        width: 25%;
+        background-color: black;
+        display: initial;
+    }
+}
+
+@media (min-width: 900px) {
+    .intro {
+        width: 70%;
+    }
+}
+
+@media (min-width: 1000px) {
+    h1 {
+        font-size: 62px;
+    }
+}
+
+@media (min-width: 1100px) {
+    h1 {
+        font-size: 72px;
+    }
+}
