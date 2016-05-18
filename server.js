@@ -1,17 +1,17 @@
 // Require the modules we need
-var http = require('http');
-var WebSocketServer = require('websocket').server;
-var week = require('week');
-var includes = require('array-includes'); // check if array contains element
-var config = require('./config'); // configuration settings
-var port = config.port;
-var filename = config.logFile; // log saved here
-var serverName = config.serverName; // 'username' to sign server announcements
-var allowedOrins = config.allowedOrigins; // only accept connections from these
-var i;
-var Message = require("./Message");
-var ConnectionGroup = require("./ConnectionGroup");
+var http =                require('http');
+var WebSocketServer =     require('websocket').server;
+var week =                require('week');
+var includes =            require('array-includes'); // check if array contains element
+var config =              require('./config'); // configuration settings
+var port =                config.port;
+var filename =            config.logFile; // log saved here
+var serverName =          config.serverName; // 'username' to sign server announcements
+var allowedOrins =        config.allowedOrigins; // only accept connections from these
+var Message =             require("./Message");
+var ConnectionGroup =     require("./ConnectionGroup");
 var WebSocketConnection = require("./WebSocketConnection");
+var i;
 
 // Convert Date object to unix timestamp
 // https://coderwall.com/p/rbfl6g/how-to-get-the-correct-unix-timestamp-from-any-date-in-javascript
