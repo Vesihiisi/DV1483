@@ -4,6 +4,7 @@
  */
 var fs = require('fs'); // for saving log files
 var sanitize = require('sanitize-html'); // clean up user input to prevent injections
+var moment = require('moment'); // for formatting timestamp in log files
 function Message(author, content, type) {
     this.author = author;
     this.content = sanitize(content, {

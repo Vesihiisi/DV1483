@@ -6,7 +6,6 @@ var week = require('week');
 var includes = require('array-includes'); // check if array contains element
 var sanitize = require('sanitize-html'); // clean up user input to prevent injections
 var gravatar = require('gravatar'); // get gravatar from email address
-var moment = require('moment'); // for formatting timestamp in log files
 var config = require('./config'); // configuration settings
 var port = config.port;
 var filename = config.logFile; // log saved here
