@@ -58,4 +58,8 @@ ConnectionGroup.prototype.sendUsernames = function() {
     this.sendToAll(message)
 }
 
+ConnectionGroup.prototype.getIndexOfUser = function(username) {
+    return this.connections.indexOf(username);
+}
+
 module.exports = ConnectionGroup;
