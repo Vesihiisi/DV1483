@@ -142,7 +142,8 @@ $(document).ready(function() {
 
         function notify(message) {
             Push.create(prettyTimestamp(message.timestamp) + " | " + message.author, {
-                body: message.content
+                body: message.content,
+                icon: imgsArray[namesArray.indexOf(message.author)]
             });
         }
         if (message.type === "default") { // if message comes from normal user, display user img
@@ -175,7 +176,8 @@ $(document).ready(function() {
             if (index % 2 === 0) {
                 namesArray.push(value);
             } else {
-                imgsArray.push(value);
+                var decoded = value.replace(/&amp;/g, '&'); // workaround for &amp in img url
+                imgsArray.push(decoded); // without it, img doesn't show correctly in desktop notifications
             }
         })
         console.log(imgsArray);
