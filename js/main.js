@@ -127,6 +127,7 @@ $(document).ready(function() {
             var momentObject = moment.unix(unixTime);
             return momentObject.format("HH:mm:ss")
         }
+
         function mentionsMe(text) {
             if (text.toLowerCase().indexOf("@" + myName) >= 0) {
                 return true;
@@ -134,8 +135,15 @@ $(document).ready(function() {
                 return false;
             }
         }
+
         function markMention(jqueryElement) {
             jqueryElement.addClass("mention");
+        }
+
+        function notify(message) {
+            Push.create(prettyTimestamp(message.timestamp) + " | " + message.author, {
+                body: message.content
+            });
         }
         if (message.type === "default") { // if message comes from normal user, display user img
             var img = imgsArray[namesArray.indexOf(message.author)];
@@ -145,7 +153,8 @@ $(document).ready(function() {
         var bread = $(para("message-content", "<span class='content " + message.type + "'>" + message.content + "</span>"));
         $(where).append(bread);
         if (mentionsMe(message.content)) {
-            markMention(bread)
+            markMention(bread);
+            notify(message)
         }
 
         where.animate({ scrollTop: where[0].scrollHeight }, 500); // Scroll to the bottom!
