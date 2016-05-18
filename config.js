@@ -1,5 +1,11 @@
 var config = {};
 
+// Enable to have console.log of stuff that's going on!
+config.debug = false;
+
+// Enable to console.log all incoming chat messages
+config.debugMessages = false;
+
 // Port on which to deploy server
 config.port = 4321;
 

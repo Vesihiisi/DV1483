@@ -8,6 +8,8 @@ var port = config.port;
 var filename = config.logFile; // log saved here
 var serverName = config.serverName; // 'username' to sign server announcements
 var allowedOrins = config.allowedOrigins; // only accept connections from these
+var debug = config.debug; // should we console.log stuff that happens to server
+var debugMessages = config.debugMessages; // should we console.log all incoming messages
 var Message = require("./Message"); // class for single message
 var ConnectionGroup = require("./ConnectionGroup"); // class for abstraction around all connected clients
 var WebSocketConnection = require("./WebSocketConnection");
@@ -16,7 +18,9 @@ var i;
 
 // Create a http server with a callback handling all requests
 var httpServer = http.createServer(function(request, response) {
-    console.log((new Date()) + ' Received request for ' + request.url);
+    if (debug) {
+        console.log((new Date()) + ' Received request for ' + request.url);
+    }
     response.writeHead(200, { 'Content-type': 'text/plain' });
     response.end('This is a chat server!\n');
 });
@@ -24,19 +28,31 @@ var httpServer = http.createServer(function(request, response) {
 
 // Always check and explicitly allow the origin
 function originIsAllowed(origin) {
-    console.log("Origin: " + origin);
+    if (debug) {
+        console.log("Connection from origin: " + origin);
+    }
+
     if (includes(allowedOrins, origin)) {
-        console.log("Origin allowed!");
+        if (debug) {
+            console.log("Origin allowed!");
+        }
+
         return true;
     }
-    console.log("Origin not allowed!");
+    if (debug) {
+        console.log("Origin not allowed!");
+    }
+
     return false;
 }
 
 
 // Setup the http-server to listen to a port
 httpServer.listen(port, function() {
-    console.log((new Date()) + ' HTTP server is listening on port ' + port);
+    if (debug) {
+        console.log((new Date()) + ' HTTP server is listening on port ' + port);
+    }
+
 });
 
 
@@ -57,7 +73,9 @@ wsServer.on('request', function(request) {
 
     if (!originIsAllowed(request.origin)) {
         request.reject();
-        console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+        if (debug) {
+            console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+        }
         return;
     }
 
@@ -67,15 +85,22 @@ wsServer.on('request', function(request) {
     allConnections.add(connection);
     allConnections.sendUsernames(); // now the client can update list of participants
 
-    console.log((new Date()) + ' Connection accepted from ' + request.origin);
+    if (debug) {
+        console.log((new Date()) + ' Connection accepted from ' + request.origin);
+    }
+
+    
 
 
     // Callback to handle each message from the client
     connection.on('message', function(indata) {
         if (indata.type === 'utf8') {
             var message = new Message(connection.getUsername(), indata.utf8Data, "default");
+            if (debugMessages) {
+                console.log('Incoming: ' + message.timestamp + " | " + message.author + " | " + message.content);
+            }
 
-            console.log('Received Message: ' + indata.utf8Data);
+            
             if (message.content.charAt(0) === "/") { // parsing fun starts here
                 var noSlash = message.content.substring(1);
                 var parts = noSlash.split(" ");
@@ -109,9 +134,15 @@ wsServer.on('request', function(request) {
 
     // Callback when client closes the connection
     connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        if (debug) {
+            console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        }
+        
         allConnections.remove(connection); // make sure connection is no longer in the array
         allConnections.sendToAll(new Message(serverName, connection.username + " has left.", "notification"));
-        console.log("Active connections: " + allConnections.getNumber());
+        if (debug) {
+            console.log("Active connections: " + allConnections.getNumber());
+        }
+        
     });
 });
