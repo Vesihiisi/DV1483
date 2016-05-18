@@ -1,19 +1,17 @@
 // Require the modules we need
 var http = require('http');
 var WebSocketServer = require('websocket').server;
-var WebSocketConnection = require('websocket').connection;
 var week = require('week');
 var includes = require('array-includes'); // check if array contains element
-var sanitize = require('sanitize-html'); // clean up user input to prevent injections
-var gravatar = require('gravatar'); // get gravatar from email address
 var config = require('./config'); // configuration settings
 var port = config.port;
 var filename = config.logFile; // log saved here
 var serverName = config.serverName; // 'username' to sign server announcements
 var allowedOrins = config.allowedOrigins; // only accept connections from these
 var i;
-var Message = require("./Message")
-
+var Message = require("./Message");
+var ConnectionGroup = require("./ConnectionGroup");
+var WebSocketConnection = require("./WebSocketConnection");
 
 // Convert Date object to unix timestamp
 // https://coderwall.com/p/rbfl6g/how-to-get-the-correct-unix-timestamp-from-any-date-in-javascript
@@ -72,115 +70,10 @@ wsServer = new WebSocketServer({
 
 
 
-/**
- * Extend connection object with properties we'll need.
- */
-
-WebSocketConnection.prototype.username = null;
-WebSocketConnection.prototype.img = null;
-WebSocketConnection.prototype.setUsername = function(name, group, mode) {
-    mode = mode || null;
-    name = name.trim() // whitespace is messy and causes confusion
-    if (name.substring(0, 1) == '/') {
-        name = name.substring(1); // no you can't have a name that starts with a slash
-    }
-    name = sanitize(name, { // prevent injections
-        allowedTags: [],
-        allowedAttributes: []
-    });
-    if (mode === "initial") { // duplicate check
-        if (group.userExists(name)) { // if before chat starts, prevent duplicates by adding a number
-            name = name + "_2";
-        }
-        this.username = name;
-        group.sendToAll(new Message(serverName, this.username + " has joined.", "notification"))
-    } else { // but if a user attempts during chat, don't do anything, simply prevent
-        if (group.userExists(name)) {
-            this.sendToOne(new Message(serverName, "Can't change name", "warning"))
-        } else {
-            var oldName = this.username;
-            this.username = name;
-            this.sendNameChangeNotification(group, oldName, this.username)
-        }
-    }
-
-}
-WebSocketConnection.prototype.getUsername = function() {
-    return this.username;
-}
-WebSocketConnection.prototype.sendToOne = function(message) {
-    this.sendUTF(message.toJson());
-}
-WebSocketConnection.prototype.sendOwnName = function() {
-    this.sendToOne(new Message(serverName, this.getUsername(), "user-name"));
-}
-WebSocketConnection.prototype.sendNameChangeNotification = function(group, oldName, newName) {
-    group.sendToAll(new Message(serverName, oldName + " is now known as " + newName + ".", "notification"))
-}
-WebSocketConnection.prototype.setImg = function(email) {
-    this.img = gravatar.url(email, { s: '200', d: 'identicon' }, false);
-    console.log(this.img)
-}
-WebSocketConnection.prototype.getImg = function() {
-    return this.img;
-}
 
 
-/**
- * Object model for a group of connections
- * that is, all the users connected to the chat.
- */
-var ConnectionGroup = function(array) {
-    this.connections = array;
-}
 
 
-ConnectionGroup.prototype.sendToAll = function(message) {
-    for (i = 0; i < this.connections.length; i++) {
-        this.connections[i].sendUTF(message.toJson());
-    }
-}
-
-ConnectionGroup.prototype.add = function(connection) {
-    this.connections.push(connection);
-    this.sendUsernames();
-}
-
-ConnectionGroup.prototype.remove = function(connection) {
-    this.connections.splice(this.connections.indexOf(connection), 1);
-    this.sendUsernames();
-}
-
-ConnectionGroup.prototype.getNumber = function() {
-    return this.connections.length;
-}
-
-ConnectionGroup.prototype.userExists = function(name) {
-    for (i = 0; i < this.connections.length; i++) {
-        if (this.connections[i].getUsername() === name) {
-            return true;
-        }
-    }
-    return false;
-}
-
-ConnectionGroup.prototype.getUsernames = function() {
-    var list = [];
-    for (i = 0; i < this.connections.length; i++) {
-        var userData = {
-            "img": this.connections[i].getImg(),
-            "username": this.connections[i].getUsername()
-        };
-        list.push(userData.username);
-        list.push(userData.img);
-    }
-    return list;
-}
-
-ConnectionGroup.prototype.sendUsernames = function() {
-    var message = new Message(serverName, this.getUsernames(), "user-list");
-    this.sendToAll(message)
-}
 
 var allConnections = new ConnectionGroup([]);
 
