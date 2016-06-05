@@ -2,7 +2,7 @@ $(document).ready(function() {
     'use strict';
     var websocket;
     var main = $("#echo");
-    var serverSelection = $("#server-selection")
+    var serverSelection = $("#server-selection");
     var inputName = $("#input-name");
     var inputEmail = $("#input-email");
     var inputNameButton = $("#input-name-button");
@@ -78,32 +78,26 @@ $(document).ready(function() {
         log = $('#chat-window');
         message = $('#message');
         log.val(""); // prevent browser from autosaving
-        clearAndFocus(message)
-        message.keypress(function(e) {
-            if (e.which == 64) { // detect @ for mentions
-                console.log('You pressed @!');
-            }
-        });
+        clearAndFocus(message);
         send.on("click", function(event) {
             var messageText = message.val();
             if (messageText.length === 0) { // don't send empty msg
                 return;
             }
             if (!websocket || websocket.readyState === 3) {
-                // addToLog('The websocket is not connected to a server.');
             } else {
                 websocket.send(messageText);
-                clearAndFocus(message)
+                clearAndFocus(message);
             }
-        })
+        });
 
         $("#show-userlist").on("click", function() {
             toggleParticipantsList();
-        })
+        });
 
         $("#close-participants-list").on("click", function() {
             toggleParticipantsList();
-        })
+        });
 
         $(document).keypress(function(e) {
             if (e.which === 13) {
@@ -125,7 +119,7 @@ $(document).ready(function() {
          */
         function prettyTimestamp(unixTime) {
             var momentObject = moment.unix(unixTime);
-            return momentObject.format("HH:mm:ss")
+            return momentObject.format("HH:mm:ss");
         }
 
         function mentionsMe(text) {
@@ -146,6 +140,7 @@ $(document).ready(function() {
                 icon: imgsArray[namesArray.indexOf(message.author)]
             });
         }
+
         if (message.type === "default") { // if message comes from normal user, display user img
             var img = imgsArray[namesArray.indexOf(message.author)];
             $(where).append("<img src=" + img + " class='gravatar'>");
@@ -155,7 +150,7 @@ $(document).ready(function() {
         $(where).append(bread);
         if (mentionsMe(message.content)) {
             markMention(bread);
-            notify(message)
+            notify(message);
         }
 
         where.animate({ scrollTop: where[0].scrollHeight }, 500); // Scroll to the bottom!
@@ -163,7 +158,6 @@ $(document).ready(function() {
 
     function updateListOfParticipants(list) {
         function addLine(img, username) {
-            //return "<p><i class='ion-android-person'></i>" + username + "</p>";
             return "<p><img src='" + img + "'>" + username + "</p>";
         }
         var listArray = list.split(",");
@@ -172,22 +166,19 @@ $(document).ready(function() {
 
 
         $.each(listArray, function(index, value) {
-            //$("#participants").children("#list").append(addLine(value))
             if (index % 2 === 0) {
                 namesArray.push(value);
             } else {
                 var decoded = value.replace(/&amp;/g, '&'); // workaround for &amp in img url
                 imgsArray.push(decoded); // without it, img doesn't show correctly in desktop notifications
             }
-        })
-        console.log(imgsArray);
-        console.log(namesArray);
-        $("#online-number").text(namesArray.length)
+        });
+        $("#online-number").text(namesArray.length);
         $("#show-userlist").html("<span class='number-indicator'>" + namesArray.length + "</span>");
         $("#participants").children("#list").empty();
         $.each(namesArray, function(index, value) {
-            $("#participants").children("#list").append(addLine(imgsArray[index], value))
-        })
+            $("#participants").children("#list").append(addLine(imgsArray[index], value));
+        });
     }
 
     function updateMyName(name) {
@@ -199,12 +190,11 @@ $(document).ready(function() {
     function connectToServer(name, email) {
         var url = $("#server-selection input[type='radio']:checked").val();
         serverSelection.remove();
-        //addToLog(log, 'Connecting to: ' + url, "announcement");
         websocket = new WebSocket(url, 'broadcast-protocol');
         websocket.onopen = function() {
             websocket.send("/me_first " + name);
             websocket.send("/get_img " + email);
-        }
+        };
 
         websocket.onmessage = function(event) {
             var message = new Message(event.data);
@@ -220,12 +210,11 @@ $(document).ready(function() {
                 unreadMessages = unreadMessages + 1;
                 document.title = "[" + unreadMessages.toString() + "] " + documentTitle;
             }
-        }
+        };
 
         // Eventhandler when the websocket is closed.
         websocket.onclose = function() {
-            // addToLog(log, 'The websocket is now closed.', "announcement");
-        }
+        };
     }
 
     $(document).keypress(function(e) {
@@ -239,12 +228,11 @@ $(document).ready(function() {
     inputNameButton.on("click", function() {
         var name = inputName.val();
         var email = inputEmail.val();
-        console.log(email)
         if (name.length > 0 && email.length > 0) {
             createInterface();
             connectToServer(name, email);
         }
-    })
+    });
 
 
 
