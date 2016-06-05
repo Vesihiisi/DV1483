@@ -1,8 +1,8 @@
 $(document).ready(function() {
     'use strict';
+    var url = "ws://108.61.197.77:4321";
     var websocket;
     var main = $("#echo");
-    var serverSelection = $("#server-selection");
     var inputName = $("#input-name");
     var inputEmail = $("#input-email");
     var inputNameButton = $("#input-name-button");
@@ -188,8 +188,6 @@ $(document).ready(function() {
 
 
     function connectToServer(name, email) {
-        var url = $("#server-selection input[type='radio']:checked").val();
-        serverSelection.remove();
         websocket = new WebSocket(url, 'broadcast-protocol');
         websocket.onopen = function() {
             websocket.send("/me_first " + name);
